@@ -1,0 +1,61 @@
+server:
+  port: 8080
+  shutdown: graceful
+  servlet:
+    context-path: /order-ecommerce
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: order-ecommerce
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: false
+    properties:
+      hibernate:
+        generate_statistics: false
+        jdbc:
+          batch_size: 30
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+    hibernate:
+      ddl-auto: none
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: password
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 10
+      autocommit: false
+      poolname: order-ecommerce
+      validationTimeout: 60000
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+logging:
+  level:
+    ROOT: info
+    org.hibernate.sql: info
+
+
+---
+# qa profile
+
+spring.config.activate.on-profile: qa
+
+server:
+  port: 8081
+
+
+---
+# staging profile
+
+spring.config.activate.on-profile: staging
+
+server:
+  port: 8082
