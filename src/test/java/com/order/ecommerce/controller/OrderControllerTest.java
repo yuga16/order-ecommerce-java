@@ -1,14 +1,15 @@
 package com.order.ecommerce.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.order.ecommerce.dto.OrderDto;
 import com.order.ecommerce.dto.OrderResponseDto;
 import com.order.ecommerce.enums.OrderStatus;
+import com.order.ecommerce.repository.IOrderRepository;
 import com.order.ecommerce.service.OrderService;
 import com.order.ecommerce.util.OrderUtil;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,11 +20,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class OrderControllerTest {
     private static final OrderDto orderDtoRequest = OrderUtil.createTestOrder();
     private static final OrderResponseDto mockOrderResponse = new OrderResponseDto("2e99fe21-2243-4004-9640-e992bbcc5040", "PROCESSING");
+    private static final OrderResponseDto mockPatchOrderResponse = new OrderResponseDto("2e99fe21-2243-4004-9640-e992bbcc5040", "CANCELLED");
 
     @Mock
     private OrderService orderService;
     @InjectMocks
     private OrderController orderController;
+    
+    @Mock
+    IOrderRepository orderRepository;
+    
 
 
     @Test
@@ -48,9 +54,12 @@ class OrderControllerTest {
     @Test
     void testPatchOrder() {
         String orderId = "2e99fe21-2243-4004-9640-e992bbcc5040";
+        when(orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED.name())).thenReturn(mockPatchOrderResponse);
+       
+        // orderController.updateOrderStatus(orderId, OrderStatus.CANCELLED.name());
 
-        orderController.updateOrderStatus(orderId, OrderStatus.CANCELLED.name());
-
-        verify(orderService).updateOrderStatus(orderId, OrderStatus.CANCELLED.name());
+        //verify(orderService).updateOrderStatus(orderId, OrderStatus.CANCELLED.name());
+        OrderResponseDto actualResponse = orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED.name());
+        assertThat(actualResponse).isEqualTo(mockPatchOrderResponse);
     }
 }
